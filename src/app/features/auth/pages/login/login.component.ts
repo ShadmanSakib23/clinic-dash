@@ -10,13 +10,12 @@ import { AuthService } from '../../../../core/services';
   styleUrl: './login.component.scss',
 })
 export class LoginComponent {
-  protected readonly email = signal('');
-  protected readonly password = signal('');
-  protected readonly isLoading = signal(false);
-  protected readonly errorMessage = signal('');
+  readonly email = signal('');
+  readonly password = signal('');
+  readonly isLoading = signal(false);
+  readonly errorMessage = signal('');
   private readonly authService = inject(AuthService);
-  
-  constructor(private router: Router) {}
+  private readonly router = inject(Router);
 
   onLogin() {
     this.errorMessage.set('');
