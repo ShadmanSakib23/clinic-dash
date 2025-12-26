@@ -1,1 +1,65 @@
-<p>login.page works!</p>
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>Clinic Dashboard</h1>
+      <p>Sign in to your account</p>
+    </div>
+
+    <form class="login-form" (ngSubmit)="onLogin()">
+      <!-- Error Message -->
+      @if (errorMessage()) {
+        <div class="error-message">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+          placeholder="Enter your email"
+          required
+          autocomplete="email"
+        />
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
+          placeholder="Enter your password"
+          required
+          autocomplete="current-password"
+        />
+      </div>
+
+      <!-- Login Button -->
+      <button type="submit" class="login-button" [disabled]="isLoading()">
+        @if (isLoading()) {
+          <span class="spinner"></span>
+        } @else {
+          <span>Login</span>
+        }
+      </button>
+
+      <!-- Helper Text -->
+      <div class="helper-text">
+        <p>Demo credentials:</p>
+        <ul>
+          <li>Admin: admin@clinic.com / admin123</li>
+          <li>Doctor: dr.smith@clinic.com / doctor123</li>
+        </ul>
+      </div>
+    </form>
+  </div>
+</div>

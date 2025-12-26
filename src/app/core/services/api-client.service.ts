@@ -18,7 +18,7 @@ export interface ApiError {
   providedIn: 'root',
 })
 export class ApiClientService {
-  private readonly defaultDelay = 500; // Simulate network delay
+  private readonly defaultDelay = 1000; // Simulate network delay
 
   /**
    * Simulates a GET request to the backend
