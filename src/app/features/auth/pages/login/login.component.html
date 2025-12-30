@@ -1,65 +1,93 @@
 <div class="login-container">
-  <div class="login-card">
-    <div class="login-header">
-      <h1>Clinic Dashboard</h1>
-      <p>Sign in to your account</p>
-    </div>
+  <mat-card class="login-card">
+    <!-- Card header -->
+    <mat-card-header>
+      <div class="login-header">
+        <mat-icon class="login-icon">local_hospital</mat-icon>
+        <mat-card-title> Demo Web App</mat-card-title>
+        <mat-card-subtitle>Sign in to your account</mat-card-subtitle>
+      </div>
+    </mat-card-header>
 
-    <form class="login-form" (ngSubmit)="onLogin()">
-      <!-- Error Message -->
+    <!-- Card content -->
+    <mat-card-content>
+      <!-- Error message -->
       @if (errorMessage()) {
         <div class="error-message">
-          {{ errorMessage() }}
+          <mat-icon>error</mat-icon>
+          <span>{{ errorMessage() }}</span>
         </div>
       }
 
-      <!-- Email Field -->
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          [ngModel]="email()"
-          (ngModelChange)="email.set($event)"
-          placeholder="Enter your email"
-          required
-          autocomplete="email"
-        />
-      </div>
+      <!-- Login form -->
+      <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+        <!-- Email field -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input 
+            matInput 
+            type="email"
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event)"
+            name="email"
+            placeholder="Enter your email"
+            required
+            autocomplete="email"
+            [disabled]="isLoading()">
+          <mat-icon matPrefix>email</mat-icon>
+        </mat-form-field>
 
-      <!-- Password Field -->
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          [ngModel]="password()"
-          (ngModelChange)="password.set($event)"
-          placeholder="Enter your password"
-          required
-          autocomplete="current-password"
-        />
-      </div>
+        <!-- Password field -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input 
+            matInput 
+            [type]="hidePassword() ? 'password' : 'text'"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+            name="password"
+            placeholder="Enter your password"
+            required
+            autocomplete="current-password"
+            [disabled]="isLoading()">
+          <mat-icon matPrefix>lock</mat-icon>
+          <button 
+            mat-icon-button 
+            matSuffix 
+            type="button"
+            (click)="hidePassword.set(!hidePassword())"
+            [attr.aria-label]="'Hide password'"
+            [disabled]="isLoading()">
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
 
-      <!-- Login Button -->
-      <button type="submit" class="login-button" [disabled]="isLoading()">
-        @if (isLoading()) {
-          <span class="spinner"></span>
-        } @else {
-          <span>Login</span>
-        }
-      </button>
+        <!-- Login button -->
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="submit"
+          class="login-button"
+          [disabled]="isLoading() || !loginForm.valid">
+          @if (isLoading()) {
+            <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+            <span>Signing in...</span>
+          } @else {
+            <span>Sign In</span>
+          }
+        </button>
+      </form>
 
-      <!-- Helper Text -->
-      <div class="helper-text">
-        <p>Demo credentials:</p>
-        <ul>
-          <li>Admin: admin@clinic.com / admin123</li>
-          <li>Doctor: dr.smith@clinic.com / doctor123</li>
-        </ul>
+      <!-- Demo credentials -->
+      <div class="demo-credentials">
+        <mat-icon>info</mat-icon>
+        <div>
+          <strong>Demo Credentials:</strong>
+          <p>Admin: admin@clinic.com / admin123</p>
+          <p>Doctor: john.doe@clinic.com / doctor123</p>
+        </div>
       </div>
-    </form>
-  </div>
+    </mat-card-content>
+  </mat-card>
 </div>
+
