@@ -1,0 +1,152 @@
+<!-- 
+  Main Layout Container - Material Design
+  Uses mat-sidenav-container for responsive layout with drawer
+-->
+<mat-sidenav-container class="layout-container">
+  
+  <!-- 
+    SIDEBAR SECTION
+    Material sidenav with navigation links
+    Mode: 'side' keeps it visible on desktop, toggles to 'over' on mobile
+  -->
+  <mat-sidenav 
+    #sidenav
+    [opened]="!isSidebarCollapsed()"
+    [mode]="'side'"
+    class="sidebar">
+    
+    <!-- Sidebar header with app branding -->
+    <div class="sidebar-header">
+      <mat-icon class="app-icon">local_hospital</mat-icon>
+      @if (!isSidebarCollapsed()) {
+        <h2 class="app-title">Clinic Dashboard</h2>
+      }
+    </div>
+
+    <!-- Navigation list -->
+    <mat-nav-list class="nav-list">
+      @for (item of visibleNavigation(); track item.route) {
+        <a 
+          mat-list-item
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [matTooltip]="isSidebarCollapsed() ? item.label : ''"
+          matTooltipPosition="right">
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          @if (!isSidebarCollapsed()) {
+            <span matListItemTitle>{{ item.label }}</span>
+          }
+        </a>
+      }
+    </mat-nav-list>
+
+    <!-- Sidebar footer with logout -->
+    <div class="sidebar-footer">
+      <button 
+        mat-button
+        class="logout-btn"
+        (click)="onLogout()"
+        [matTooltip]="isSidebarCollapsed() ? 'Logout' : ''"
+        matTooltipPosition="right">
+        <mat-icon>logout</mat-icon>
+        @if (!isSidebarCollapsed()) {
+          <span>Logout</span>
+        }
+      </button>
+    </div>
+  </mat-sidenav>
+
+  <!-- 
+    CONTENT SECTION
+    Contains header toolbar and main content area
+  -->
+  <mat-sidenav-content>
+    
+    <!-- 
+      HEADER TOOLBAR
+      Material toolbar with navigation toggle, notifications, and user menu
+    -->
+    <mat-toolbar color="primary" class="header">
+      <!-- Left section: Menu toggle -->
+      <button 
+        mat-icon-button 
+        (click)="toggleSidebar()"
+        matTooltip="Toggle sidebar">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <!-- Spacer to push right content to the end -->
+      <span class="spacer"></span>
+
+      <!-- Right section: Notifications and user menu -->
+      <div class="header-actions">
+        <!-- Notifications button with badge -->
+        <button 
+          mat-icon-button 
+          (click)="onNotificationClick()"
+          matTooltip="Notifications"
+          matBadge="3"
+          matBadgeColor="warn"
+          matBadgeSize="small">
+          <mat-icon>notifications</mat-icon>
+        </button>
+
+        <!-- User menu -->
+        @if (currentUser(); as user) {
+          <button 
+            mat-button 
+            [matMenuTriggerFor]="userMenu"
+            class="user-button">
+            <!-- User avatar -->
+            <div class="user-avatar">
+              {{ userInitials() }}
+            </div>
+            <!-- User info (hidden on mobile) -->
+            <div class="user-info">
+              <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+              <span class="user-role">{{ user.role }}</span>
+            </div>
+            <mat-icon>arrow_drop_down</mat-icon>
+          </button>
+
+          <!-- User dropdown menu -->
+          <mat-menu #userMenu="matMenu" class="user-menu">
+            <div class="user-menu-header">
+              <div class="user-avatar-large">
+                {{ userInitials() }}
+              </div>
+              <div>
+                <div class="user-menu-name">{{ user.firstName }} {{ user.lastName }}</div>
+                <div class="user-menu-email">{{ user.email }}</div>
+              </div>
+            </div>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="onProfileClick()">
+              <mat-icon>person</mat-icon>
+              <span>My Profile</span>
+            </button>
+            <button mat-menu-item>
+              <mat-icon>settings</mat-icon>
+              <span>Settings</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="onLogout()">
+              <mat-icon>logout</mat-icon>
+              <span>Logout</span>
+            </button>
+          </mat-menu>
+        }
+      </div>
+    </mat-toolbar>
+
+    <!-- 
+      MAIN CONTENT AREA
+      Router outlet renders the current route's component
+    -->
+    <main class="content">
+      <router-outlet />
+    </main>
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>
