@@ -31,7 +31,7 @@ import { AuthService } from '../../core/services';
   selector: 'app-layout',
   imports: [
     RouterOutlet, 
-    RouterLink, 
+    RouterLink,
     RouterLinkActive,
     MatToolbarModule,
     MatSidenavModule,
@@ -49,28 +49,14 @@ export class LayoutComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  // Sidebar state management
-  // Controls whether sidebar is expanded or collapsed
-  // Useful for mobile responsiveness and user preference
   readonly isSidebarCollapsed = signal(false);
-
-  // Current user information
-  // Retrieved from AuthService to display in header
-  // Shows user name, role, and avatar
   readonly currentUser = computed(() => this.authService.user());
-
-  // User's initials for avatar
-  // Computed from user's name (e.g., "John Doe" -> "JD")
-  // Used when no profile picture is available
   readonly userInitials = computed(() => {
     const user = this.currentUser();
     if (!user) return '';
     const names = user.firstName.split(' ');
     return names.map((n: string) => n[0]).join('').toUpperCase();
   });
-
-  // Navigation menu items with Material icons
-  // Each item should have: icon (Material icon name), label, route, and optional role requirements
   readonly navigationItems = [
     { icon: 'dashboard', label: 'Dashboard', route: '/dashboard', roles: ['admin', 'doctor', 'receptionist'] },
     { icon: 'people', label: 'Patients', route: '/patients', roles: ['admin', 'doctor', 'receptionist'] },
@@ -80,7 +66,7 @@ export class LayoutComponent {
 
   // Filtered navigation based on user role
   // Only shows menu items the current user has permission to access
-  readonly visibleNavigation = computed(() => {
+  readonly accessibleNavigationItems = computed(() => {
     const user = this.currentUser();
     if (!user) return [];
     return this.navigationItems.filter(item => 
@@ -117,21 +103,17 @@ export class LayoutComponent {
   /**
    * Handle notification click
    * Opens notification panel or navigates to notifications page
-   * TODO: Implement notification system
    */
   onNotificationClick() {
     // TODO: Implement notification panel/dropdown
-    console.log('Notifications clicked');
   }
 
   /**
    * Handle profile menu click
    * Opens dropdown menu with user options (profile, settings, logout)
-   * TODO: Implement profile dropdown menu
    */
   onProfileClick() {
     // TODO: Implement profile dropdown menu
-    console.log('Profile clicked');
   }
 
 }
