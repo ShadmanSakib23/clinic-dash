@@ -1,0 +1,206 @@
+$primary-color: #1976d2;
+$warn-color: #f44336;
+$success-color: #4caf50;
+
+// Patient Details Tab Styles
+.details-tabs {
+  ::ng-deep {
+    .mat-mdc-tab-labels {
+      background: #fafafa;
+    }
+  }
+
+  .tab-content {
+    padding: 24px;
+
+    .info-section {
+      margin-bottom: 32px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 18px;
+        font-weight: 500;
+        color: #333;
+        margin: 0 0 16px 0;
+
+        mat-icon {
+          color: $primary-color;
+        }
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 24px;
+
+        .info-item {
+          label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+          }
+
+          p {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+
+            &.gender-badge {
+              display: inline-flex;
+              align-items: center;
+              gap: 4px;
+              padding: 4px 12px;
+              border-radius: 16px;
+              font-size: 14px;
+
+              mat-icon {
+                font-size: 18px;
+                width: 18px;
+                height: 18px;
+              }
+
+              &.male {
+                background: #e3f2fd;
+                color: #1976d2;
+              }
+
+              &.female {
+                background: #fce4ec;
+                color: #c2185b;
+              }
+
+              &.other {
+                background: #f3e5f5;
+                color: #7b1fa2;
+              }
+            }
+          }
+
+          .email-link,
+          .phone-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: $primary-color;
+            text-decoration: none;
+            transition: opacity 0.2s;
+
+            mat-icon {
+              font-size: 18px;
+              width: 18px;
+              height: 18px;
+            }
+
+            &:hover {
+              opacity: 0.8;
+              text-decoration: underline;
+            }
+          }
+
+          .blood-type-chip {
+            background: #ffebee;
+            color: #c62828;
+            font-weight: 600;
+          }
+        }
+      }
+
+      .address-content {
+        p {
+          margin: 8px 0;
+          font-size: 16px;
+          color: #333;
+          line-height: 1.6;
+
+          &:first-child {
+            margin-top: 0;
+          }
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+
+      .medical-info {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+
+        .medical-item {
+          label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 12px;
+          }
+
+          .chips-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+
+            mat-chip {
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+
+              mat-icon {
+                font-size: 16px;
+                width: 16px;
+                height: 16px;
+              }
+
+              &.allergy-chip {
+                background: #fff3e0;
+                color: #e65100;
+              }
+
+              &.condition-chip {
+                background: #e8f5e9;
+                color: #2e7d32;
+              }
+            }
+          }
+
+          .no-data {
+            color: #999;
+            font-style: italic;
+            margin: 0;
+          }
+        }
+      }
+    }
+
+    mat-divider {
+      margin: 24px 0;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .details-tabs {
+    .tab-content {
+      padding: 16px;
+
+      .info-section {
+        .info-grid {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+      }
+    }
+  }
+}

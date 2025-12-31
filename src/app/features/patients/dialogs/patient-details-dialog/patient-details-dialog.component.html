@@ -1,0 +1,235 @@
+<app-modal
+  [title]="patientFullName"
+  [subtitle]="'Patient ID: ' + patient.id"
+  [icon]="'person'"
+  [showClose]="true"
+  [showPrimaryAction]="true"
+  [showSecondaryAction]="true"
+  [primaryActionText]="'Edit'"
+  [secondaryActionText]="'Delete'"
+  [primaryActionColor]="'primary'"
+  (primaryAction)="edit()"
+  (secondaryAction)="delete()"
+  (closed)="close()">
+
+  <mat-tab-group class="details-tabs">
+    <!-- Personal Information Tab -->
+    <mat-tab label="Personal Info">
+      <div class="tab-content">
+        <div class="info-section">
+          <h3 class="section-title">
+            <mat-icon>person_outline</mat-icon>
+            Basic Information
+          </h3>
+          
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Full Name</label>
+              <p>{{ patient.firstName }} {{ patient.lastName }}</p>
+            </div>
+            
+            <div class="info-item">
+              <label>Age</label>
+              <p>{{ calculateAge(patient.dateOfBirth) }} years</p>
+            </div>
+            
+            <div class="info-item">
+              <label>Date of Birth</label>
+              <p>{{ patient.dateOfBirth | date:'mediumDate' }}</p>
+            </div>
+            
+            <div class="info-item">
+              <label>Gender</label>
+              <p class="gender-badge" [class]="patient.gender">
+                <mat-icon>{{ patient.gender === 'male' ? 'male' : patient.gender === 'female' ? 'female' : 'transgender' }}</mat-icon>
+                {{ patient.gender | titlecase }}
+              </p>
+            </div>
+            
+            @if (patient.bloodType) {
+              <div class="info-item">
+                <label>Blood Type</label>
+                <p>
+                  <mat-chip class="blood-type-chip">{{ patient.bloodType }}</mat-chip>
+                </p>
+              </div>
+            }
+            
+            <div class="info-item">
+              <label>Registered Date</label>
+              <p>{{ patient.registeredDate | date:'mediumDate' }}</p>
+            </div>
+            
+            @if (patient.lastVisit) {
+              <div class="info-item">
+                <label>Last Visit</label>
+                <p>{{ patient.lastVisit | date:'mediumDate' }}</p>
+              </div>
+            }
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="info-section">
+          <h3 class="section-title">
+            <mat-icon>contact_mail</mat-icon>
+            Contact Information
+          </h3>
+          
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Email</label>
+              <p>
+                <a [href]="'mailto:' + patient.email" class="email-link">
+                  <mat-icon>email</mat-icon>
+                  {{ patient.email }}
+                </a>
+              </p>
+            </div>
+            
+            <div class="info-item">
+              <label>Phone</label>
+              <p>
+                <a [href]="'tel:' + patient.phone" class="phone-link">
+                  <mat-icon>phone</mat-icon>
+                  {{ patient.phone }}
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="info-section">
+          <h3 class="section-title">
+            <mat-icon>home</mat-icon>
+            Address
+          </h3>
+          
+          <div class="address-content">
+            <p>{{ patient.address.street }}</p>
+            <p>{{ patient.address.city }}, {{ patient.address.state }} {{ patient.address.zipCode }}</p>
+            <p>{{ patient.address.country }}</p>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Medical Information Tab -->
+    <mat-tab label="Medical Info">
+      <div class="tab-content">
+        <div class="info-section">
+          <h3 class="section-title">
+            <mat-icon>medical_information</mat-icon>
+            Medical Information
+          </h3>
+          
+          <div class="medical-info">
+            <div class="medical-item">
+              <label>Allergies</label>
+              @if (patient.allergies.length > 0) {
+                <mat-chip-set class="chips-list">
+                  @for (allergy of patient.allergies; track allergy) {
+                    <mat-chip class="allergy-chip">
+                      <mat-icon>warning</mat-icon>
+                      {{ allergy }}
+                    </mat-chip>
+                  }
+                </mat-chip-set>
+              } @else {
+                <p class="no-data">No known allergies</p>
+              }
+            </div>
+            
+            <div class="medical-item">
+              <label>Chronic Conditions</label>
+              @if (patient.chronicConditions.length > 0) {
+                <mat-chip-set class="chips-list">
+                  @for (condition of patient.chronicConditions; track condition) {
+                    <mat-chip class="condition-chip">
+                      <mat-icon>medication</mat-icon>
+                      {{ condition }}
+                    </mat-chip>
+                  }
+                </mat-chip-set>
+              } @else {
+                <p class="no-data">No chronic conditions</p>
+              }
+            </div>
+          </div>
+        </div>
+
+        @if (patient.insuranceInfo) {
+          <mat-divider></mat-divider>
+
+          <div class="info-section">
+            <h3 class="section-title">
+              <mat-icon>card_membership</mat-icon>
+              Insurance Information
+            </h3>
+            
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Provider</label>
+                <p>{{ patient.insuranceInfo.provider }}</p>
+              </div>
+              
+              <div class="info-item">
+                <label>Policy Number</label>
+                <p>{{ patient.insuranceInfo.policyNumber }}</p>
+              </div>
+              
+              @if (patient.insuranceInfo.groupNumber) {
+                <div class="info-item">
+                  <label>Group Number</label>
+                  <p>{{ patient.insuranceInfo.groupNumber }}</p>
+                </div>
+              }
+              
+              <div class="info-item">
+                <label>Expiry Date</label>
+                <p>{{ patient.insuranceInfo.expiryDate | date:'mediumDate' }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- Emergency Contact Tab -->
+    <mat-tab label="Emergency Contact">
+      <div class="tab-content">
+        <div class="info-section">
+          <h3 class="section-title">
+            <mat-icon>contact_emergency</mat-icon>
+            Emergency Contact
+          </h3>
+          
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Name</label>
+              <p>{{ patient.emergencyContact.name }}</p>
+            </div>
+            
+            <div class="info-item">
+              <label>Relationship</label>
+              <p>{{ patient.emergencyContact.relationship }}</p>
+            </div>
+            
+            <div class="info-item">
+              <label>Phone</label>
+              <p>
+                <a [href]="'tel:' + patient.emergencyContact.phone" class="phone-link">
+                  <mat-icon>phone</mat-icon>
+                  {{ patient.emergencyContact.phone }}
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</app-modal>

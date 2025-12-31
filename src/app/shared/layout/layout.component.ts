@@ -58,7 +58,7 @@ export class LayoutComponent {
     return names.map((n: string) => n[0]).join('').toUpperCase();
   });
   readonly navigationItems = [
-    { icon: 'dashboard', label: 'Dashboard', route: '/dashboard', roles: ['admin', 'doctor', 'receptionist'] },
+    { icon: 'dashboard', label: 'Dashboard', route: '/dashboard', roles: ['admin'] },
     { icon: 'people', label: 'Patients', route: '/patients', roles: ['admin', 'doctor', 'receptionist'] },
     { icon: 'medical_services', label: 'Doctors', route: '/doctors', roles: ['admin', 'receptionist'] },
     { icon: 'event', label: 'Appointments', route: '/appointments', roles: ['admin', 'doctor', 'receptionist'] },
