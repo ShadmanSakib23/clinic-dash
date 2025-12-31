@@ -1,0 +1,209 @@
+<div class="table-container" [style.height]="height()">
+  <!-- Header Section -->
+  <div class="table-header">
+    <!-- Search Bar -->
+    @if (showSearch()) {
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search</mat-label>
+        <input 
+          matInput 
+          [value]="searchTerm()"
+          (input)="onSearchChange($any($event.target).value)"
+          placeholder="Search all columns...">
+        <mat-icon matPrefix>search</mat-icon>
+        @if (searchTerm()) {
+          <button 
+            mat-icon-button 
+            matSuffix 
+            (click)="clearSearch()"
+            aria-label="Clear search">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+    }
+
+    <!-- Action Buttons -->
+    <div class="table-actions">
+      <!-- Filter Menu -->
+      @if (filters().length > 0) {
+        <button 
+          mat-button 
+          [matMenuTriggerFor]="filterMenu"
+          class="action-button">
+          <mat-icon>filter_list</mat-icon>
+          <span>Filters</span>
+          @if (hasActiveFilters()) {
+            <mat-icon class="badge-icon">circle</mat-icon>
+          }
+        </button>
+        
+        <mat-menu #filterMenu="matMenu" class="filter-menu">
+          @for (filter of filters(); track filter.key) {
+            <div class="filter-item" (click)="$event.stopPropagation()">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ filter.label }}</mat-label>
+                <input 
+                  matInput 
+                  [value]="activeFilters()[filter.key] || ''"
+                  (input)="applyFilter(filter.key, $any($event.target).value)">
+              </mat-form-field>
+            </div>
+          }
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            <span>Clear All Filters</span>
+          </button>
+        </mat-menu>
+      }
+
+      <!-- Export Button -->
+      @if (showSelection() && selection.selected.length > 0) {
+        <button 
+          mat-button 
+          (click)="exportData()"
+          class="action-button">
+          <mat-icon>download</mat-icon>
+          <span>Export ({{ selection.selected.length }})</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Active Filters Chips -->
+  @if (hasActiveFilters() || searchTerm()) {
+    <div class="active-filters">
+      @if (searchTerm()) {
+        <mat-chip-row (removed)="clearSearch()">
+          Search: "{{ searchTerm() }}"
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-row>
+      }
+      @for (filterEntry of getActiveFilterEntries(); track filterEntry.key) {
+        <mat-chip-row (removed)="applyFilter(filterEntry.key, '')">
+          {{ filterEntry.key }}: "{{ filterEntry.value }}"
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-row>
+      }
+    </div>
+  }
+  
+  <!-- Loading Overlay -->
+  @if (loading()) {
+    <div class="loading-overlay">
+      <mat-icon class="loading-spinner">refresh</mat-icon>
+      <p>Loading data...</p>
+    </div>
+  }
+
+  <!-- Table -->
+  <div class="table-wrapper">
+    <table 
+      mat-table 
+      [dataSource]="dataSourceArray" 
+      matSort
+      (matSortChange)="onSortChange($event)"
+      class="data-table">
+      
+      <!-- Selection Column -->
+      @if (showSelection()) {
+        <ng-container matColumnDef="select" [sticky]="true">
+          <th mat-header-cell *matHeaderCellDef>
+            @if (multiSelect()) {
+              <mat-checkbox
+                [checked]="isAllSelected()"
+                [indeterminate]="isIndeterminate()"
+                (change)="toggleAllRows()">
+              </mat-checkbox>
+            }
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox
+              [checked]="selection.isSelected(row)"
+              (click)="$event.stopPropagation()"
+              (change)="toggleRow(row)">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+      }
+
+      <!-- Data Columns -->
+      @for (column of columns(); track column.key) {
+        <ng-container [matColumnDef]="column.key" [sticky]="column.sticky === 'start'" [stickyEnd]="column.sticky === 'end'">
+          <th 
+            mat-header-cell 
+            *matHeaderCellDef 
+            [mat-sort-header]="column.key"
+            [disabled]="column.sortable === false"
+            [style.text-align]="column.align || 'left'"
+            [style.width]="column.width">
+            {{ column.label }}
+          </th>
+          <td 
+            mat-cell 
+            *matCellDef="let row"
+            [style.text-align]="column.align || 'left'"
+            [innerHTML]="getCellValue(row, column)">
+          </td>
+        </ng-container>
+      }
+
+      <!-- Header Row -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumnsArray"></tr>
+      
+      <!-- Data Rows -->
+      <tr 
+        mat-row 
+        *matRowDef="let row; columns: displayedColumnsArray"
+        (click)="onRowClick(row)"
+        class="data-row">
+      </tr>
+
+      <!-- No Data Row -->
+      <tr class="mat-row no-data-row" *matNoDataRow>
+        <td [attr.colspan]="displayedColumnsArray.length" class="no-data-cell">
+          <div class="no-data-content">
+            <mat-icon>inbox</mat-icon>
+            <p>{{ emptyMessage() }}</p>
+            @if (searchTerm() || hasActiveFilters()) {
+              <button mat-button color="primary" (click)="clearFilters()">
+                Clear Filters
+              </button>
+            }
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  @if (showPagination() && totalRecords() > 0) {
+    <mat-paginator  
+      [length]="totalRecords()"
+      [pageSize]="currentPageSize()"
+      [pageSizeOptions]="pageSizeOptions()"
+      [pageIndex]="currentPage()"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+  }
+
+  <!-- Result Summary -->
+  @if (totalRecords() > 0) {
+    <div class="result-summary">
+      Showing {{ (currentPage() * currentPageSize()) + 1 }} - 
+      {{ getEndRecord() }} 
+      of {{ totalRecords() }} results
+      @if (selection.selected.length > 0) {
+        <span class="selection-count">
+          ({{ selection.selected.length }} selected)
+        </span>
+      }
+    </div>
+  }
+</div>
