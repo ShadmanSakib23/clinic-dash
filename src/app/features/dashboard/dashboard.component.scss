@@ -1,17 +1,390 @@
-.dashboard-container {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+$primary-color: #1976d2;
+$success-color: #4caf50;
+$warning-color: #ff9800;
+$error-color: #f44336;
+$info-color: #2196f3;
 
-  h1 {
-    color: #333;
-    font-size: 2rem;
-    margin-bottom: 1rem;
+.dashboard-page {
+  padding: 24px;
+  background: #f5f5f5;
+  min-height: 100vh;
+
+  // Page Header Section
+  .page-header {
+    margin-bottom: 24px;
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+
+      .title-section {
+        h1 {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 32px;
+          font-weight: 500;
+          color: #333;
+          margin: 0 0 8px 0;
+
+          mat-icon {
+            font-size: 36px;
+            width: 36px;
+            height: 36px;
+            color: $primary-color;
+          }
+        }
+
+        .subtitle {
+          color: #666;
+          margin: 0;
+          font-size: 16px;
+        }
+      }
+    }
   }
 
-  p {
-    color: #666;
-    font-size: 1.1rem;
-    margin: 0.5rem 0;
+  .loading-bar {
+    margin-bottom: 24px;
+  }
+
+  // Stats Grid
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+
+    .stat-card {
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: $primary-color;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+      }
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+
+        &::before {
+          transform: scaleX(1);
+        }
+      }
+
+      &.patients-card::before {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      &.doctors-card::before {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      }
+
+      &.appointments-card::before {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      }
+
+      &.active-card::before {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      }
+
+      mat-card-content {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 24px !important;
+
+        .stat-icon {
+          width: 64px;
+          height: 64px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+
+          mat-icon {
+            font-size: 32px;
+            width: 32px;
+            height: 32px;
+            color: white;
+          }
+
+          &.patients-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          }
+
+          &.doctors-icon {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+          }
+
+          &.appointments-icon {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+          }
+
+          &.active-icon {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+          }
+        }
+
+        .stat-details {
+          flex: 1;
+          min-width: 0;
+
+          h3 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 4px 0;
+          }
+
+          p {
+            font-size: 14px;
+            color: #666;
+            margin: 0 0 12px 0;
+            font-weight: 500;
+          }
+
+          .stat-footer {
+            .stat-badge {
+              display: inline-flex;
+              align-items: center;
+              gap: 4px;
+              padding: 4px 12px;
+              border-radius: 16px;
+              font-size: 12px;
+              font-weight: 500;
+
+              mat-icon {
+                font-size: 16px;
+                width: 16px;
+                height: 16px;
+              }
+
+              &.success {
+                background: #e8f5e9;
+                color: #2e7d32;
+              }
+
+              &.warning {
+                background: #fff3e0;
+                color: #e65100;
+              }
+
+              &.info {
+                background: #e3f2fd;
+                color: #1565c0;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Secondary Stats
+  .secondary-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+
+    .secondary-card {
+      border-radius: 12px;
+
+      mat-card-header {
+        padding: 16px 16px 0;
+
+        mat-card-title {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 18px;
+          font-weight: 500;
+          color: #333;
+
+          mat-icon {
+            color: $primary-color;
+          }
+        }
+      }
+
+      mat-card-content {
+        padding: 16px !important;
+
+        .status-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 12px 0;
+          border-bottom: 1px solid #f0f0f0;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          .status-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+
+            .status-dot {
+              width: 12px;
+              height: 12px;
+              border-radius: 50%;
+
+              &.scheduled {
+                background: #2196f3;
+              }
+
+              &.completed {
+                background: #4caf50;
+              }
+
+              &.cancelled {
+                background: #f44336;
+              }
+            }
+          }
+
+          .status-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+          }
+        }
+
+        .schedule-info {
+          text-align: center;
+          padding: 16px 0;
+
+          .schedule-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: $primary-color;
+            margin-bottom: 8px;
+          }
+
+          p {
+            color: #666;
+            margin: 0 0 16px 0;
+            font-size: 14px;
+          }
+        }
+      }
+    }
+  }
+
+  // Quick Actions
+  .quick-actions {
+    .section-title {
+      font-size: 24px;
+      font-weight: 500;
+      color: #333;
+      margin: 0 0 20px 0;
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+
+      .action-card {
+        text-align: center;
+        padding: 32px 24px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 12px;
+
+        &:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+          background: $primary-color;
+          color: white;
+
+          mat-icon {
+            color: white;
+          }
+
+          h3, p {
+            color: white;
+          }
+        }
+
+        mat-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+          color: $primary-color;
+          margin-bottom: 16px;
+          transition: color 0.3s ease;
+        }
+
+        h3 {
+          font-size: 18px;
+          font-weight: 500;
+          color: #333;
+          margin: 0 0 8px 0;
+          transition: color 0.3s ease;
+        }
+
+        p {
+          font-size: 14px;
+          color: #666;
+          margin: 0;
+          transition: color 0.3s ease;
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .dashboard-page {
+    padding: 16px;
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .secondary-stats {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .quick-actions {
+      .actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-page {
+    .quick-actions {
+      .actions-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   }
 }

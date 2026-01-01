@@ -166,6 +166,9 @@ export class DataTableComponent<T = any> implements OnDestroy {
   
   // Selection model
   selection = new SelectionModel<T>(this.multiSelect(), []);
+  
+  // Track selection as signal for reactivity
+  readonly selectedItems = signal<T[]>([]);
 
   // Regular properties for mat-table (required by Angular Material)
   displayedColumnsArray: string[] = [];
@@ -289,10 +292,11 @@ export class DataTableComponent<T = any> implements OnDestroy {
       this.currentPageSize.set(this.pageSize());
     });
 
-    // Emit selection changes
+    // Emit selection changes when selectedItems signal changes
     effect(() => {
+      const selected = this.selectedItems();
       if (this.showSelection()) {
-        this.selectionChange.emit(this.selection.selected);
+        this.selectionChange.emit(selected);
       }
     });
   }
@@ -337,6 +341,8 @@ export class DataTableComponent<T = any> implements OnDestroy {
     } else {
       this.selection.select(...this.paginatedData());
     }
+    // Update signal to trigger reactivity
+    this.selectedItems.set([...this.selection.selected]);
   }
 
   /**
@@ -344,6 +350,8 @@ export class DataTableComponent<T = any> implements OnDestroy {
    */
   toggleRow(row: T): void {
     this.selection.toggle(row);
+    // Update signal to trigger reactivity
+    this.selectedItems.set([...this.selection.selected]);
   }
 
   /**
