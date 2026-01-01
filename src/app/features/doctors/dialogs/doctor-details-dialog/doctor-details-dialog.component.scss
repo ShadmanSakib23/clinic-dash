@@ -1,0 +1,198 @@
+$primary-color: #1976d2;
+$success-color: #4caf50;
+$warn-color: #f44336;
+
+// Tabs background override
+.details-tabs {
+  ::ng-deep {
+    .mat-mdc-tab-labels {
+      background: #fafafa;
+    }
+  }
+
+  .tab-content {
+    padding: 24px;
+
+    .info-section {
+      margin-bottom: 32px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 18px;
+        font-weight: 500;
+        color: #333;
+        margin: 0 0 16px 0;
+
+        mat-icon {
+          color: $primary-color;
+        }
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 24px;
+
+        .info-item {
+          label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+          }
+
+          p {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+
+            &.fee {
+              font-size: 24px;
+              font-weight: 600;
+              color: $success-color;
+            }
+
+            &.rating {
+              color: #ff9800;
+              font-weight: 500;
+            }
+          }
+
+          .email-link,
+          .phone-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: $primary-color;
+            text-decoration: none;
+            transition: opacity 0.2s;
+
+            mat-icon {
+              font-size: 18px;
+              width: 18px;
+              height: 18px;
+            }
+
+            &:hover {
+              opacity: 0.8;
+              text-decoration: underline;
+            }
+          }
+
+          .specialization-chip {
+            background: #e3f2fd;
+            color: $primary-color;
+            font-weight: 600;
+          }
+        }
+      }
+
+      // Education list
+      .education-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        .education-item {
+          padding: 16px;
+          background: #f8f9fa;
+          border-radius: 8px;
+          border-left: 4px solid $primary-color;
+
+          .degree {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+          }
+
+          .institution {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+          }
+
+          .year {
+            font-size: 13px;
+            color: #999;
+          }
+        }
+      }
+
+      // Biography
+      .bio {
+        font-size: 15px;
+        line-height: 1.6;
+        color: #555;
+        margin: 0;
+      }
+
+      // Slots list
+      .slots-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+
+        .slot-item {
+          padding: 12px 16px;
+          background: #f8f9fa;
+          border-radius: 6px;
+          border-left: 3px solid $success-color;
+
+          .day {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+          }
+
+          .time {
+            font-size: 13px;
+            color: #666;
+          }
+        }
+      }
+
+      .no-data {
+        color: #999;
+        font-style: italic;
+        margin: 0;
+        text-align: center;
+        padding: 20px;
+      }
+    }
+
+    mat-divider {
+      margin: 24px 0;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .details-tabs {
+    .tab-content {
+      padding: 16px;
+
+      .info-section {
+        .info-grid {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+
+        .slots-list {
+          grid-template-columns: 1fr;
+        }
+      }
+    }
+  }
+}

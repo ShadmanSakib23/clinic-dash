@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './features/auth/pages/login/login.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { PatientsComponent } from './features/patients/patients.component';
+import { DoctorsComponent } from './features/doctors/doctors.component';
 import { LayoutComponent } from './shared/layout/layout.component';
 import { authGuard } from './core/guards/auth.guard';
 
@@ -18,7 +19,7 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'patients', component: PatientsComponent },
-      // { path: 'doctors', component: DoctorsComponent },
+      { path: 'doctors', component: DoctorsComponent },
       // { path: 'appointments', component: AppointmentsComponent },
     ]
   }

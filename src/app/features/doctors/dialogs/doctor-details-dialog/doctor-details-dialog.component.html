@@ -1,0 +1,155 @@
+<app-modal
+  [title]="doctorFullName()"
+  [subtitle]="doctor.specialization"
+  [icon]="'medical_services'"
+  [showClose]="true"
+  [showPrimaryAction]="true"
+  [showSecondaryAction]="true"
+  [primaryActionText]="'Edit'"
+  [secondaryActionText]="'Delete'"
+  [primaryActionColor]="'primary'"
+  (primaryAction)="edit()"
+  (secondaryAction)="delete()"
+  (closed)="close()">
+
+  <mat-tab-group class="details-tabs">
+    <!-- Professional Information Tab -->
+    <mat-tab label="Professional Info">
+      <div class="tab-content">
+        <div class="info-section">
+          <h3 class="section-title">
+            <mat-icon>badge</mat-icon>
+            Professional Details
+          </h3>
+          
+          <div class="info-grid">
+            <div class="info-item">
+              <label>License Number</label>
+              <p>{{ doctor.licenseNumber }}</p>
+            </div>
+            
+            <div class="info-item">
+              <label>Specialization</label>
+              <p>
+                <mat-chip class="specialization-chip">{{ doctor.specialization }}</mat-chip>
+              </p>
+            </div>
+            
+            <div class="info-item">
+              <label>Experience</label>
+              <p>{{ doctor.experienceYears }} years</p>
+            </div>
+            
+            <div class="info-item">
+              <label>Consultation Fee</label>
+              <p class="fee">${{ doctor.consultationFee }}</p>
+            </div>
+            
+            <div class="info-item">
+              <label>Rating</label>
+              <p class="rating">
+                ⭐ {{ doctor.rating.toFixed(1) }} ({{ doctor.reviewsCount }} reviews)
+              </p>
+            </div>
+            
+            <div class="info-item">
+              <label>Joined Date</label>
+              <p>{{ doctor.joinedDate | date:'mediumDate' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="info-section">
+          <h3 class="section-title">
+            <mat-icon>school</mat-icon>
+            Education
+          </h3>
+          
+          <div class="education-list">
+            @for (edu of doctor.education; track edu.degree) {
+              <div class="education-item">
+                <div class="degree">{{ edu.degree }}</div>
+                <div class="institution">{{ edu.institution }}</div>
+                <div class="year">{{ edu.year }}</div>
+              </div>
+            }
+          </div>
+        </div>
+
+        @if (doctor.bio) {
+          <mat-divider></mat-divider>
+
+          <div class="info-section">
+            <h3 class="section-title">
+              <mat-icon>info</mat-icon>
+              Biography
+            </h3>
+            
+            <p class="bio">{{ doctor.bio }}</p>
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- Contact Information Tab -->
+    <mat-tab label="Contact Info">
+      <div class="tab-content">
+        <div class="info-section">
+          <h3 class="section-title">
+            <mat-icon>contact_mail</mat-icon>
+            Contact Details
+          </h3>
+          
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Email</label>
+              <p>
+                <a [href]="'mailto:' + doctor.email" class="email-link">
+                  <mat-icon>email</mat-icon>
+                  {{ doctor.email }}
+                </a>
+              </p>
+            </div>
+            
+            <div class="info-item">
+              <label>Phone</label>
+              <p>
+                <a [href]="'tel:' + doctor.phone" class="phone-link">
+                  <mat-icon>phone</mat-icon>
+                  {{ doctor.phone }}
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Available Slots Tab -->
+    <mat-tab label="Availability">
+      <div class="tab-content">
+        <div class="info-section">
+          <h3 class="section-title">
+            <mat-icon>schedule</mat-icon>
+            Available Time Slots
+          </h3>
+          
+          @if (doctor.availableSlots.length > 0) {
+            <div class="slots-list">
+              @for (slot of doctor.availableSlots; track slot.dayOfWeek) {
+                <div class="slot-item">
+                  <div class="day">{{ getDayLabel(slot.dayOfWeek) }}</div>
+                  <div class="time">{{ slot.startTime }} - {{ slot.endTime }}</div>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="no-data">No available slots configured</p>
+          }
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</app-modal>
