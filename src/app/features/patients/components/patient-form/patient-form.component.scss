@@ -1,0 +1,103 @@
+$primary-color: #1976d2;
+
+.patient-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  
+  .form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    
+    .section-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #333;
+      margin: 0 0 8px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid $primary-color;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      
+      .full-width {
+        width: 100%;
+      }
+    }
+    
+    .full-width {
+      width: 100%;
+    }
+  }
+  
+  // Chips section styling
+  .chips-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    
+    .chips-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #666;
+    }
+    
+    .chips-input-group {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      
+      .chip-input {
+        flex: 1;
+      }
+      
+      button {
+        margin-top: 4px;
+      }
+    }
+    
+    .chips-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      
+      mat-chip {
+        background-color: #e3f2fd;
+        color: $primary-color;
+        font-size: 14px;
+        
+        mat-icon {
+          color: $primary-color;
+          opacity: 0.7;
+          transition: opacity 0.2s;
+          
+          &:hover {
+            opacity: 1;
+          }
+        }
+      }
+    }
+    
+    .no-items {
+      color: #999;
+      font-size: 14px;
+      font-style: italic;
+      margin: 0;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .patient-form {
+    .form-section {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}

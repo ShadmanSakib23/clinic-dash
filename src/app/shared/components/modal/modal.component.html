@@ -1,1 +1,60 @@
-<p>modal works!</p>
+<div class="modal-container">
+  <!-- Header -->
+  <div class="modal-header" mat-dialog-title>
+    <div class="header-content">
+      @if (icon()) {
+        <mat-icon class="header-icon">{{ icon() }}</mat-icon>
+      }
+      <div class="header-text">
+        <h2>{{ title() }}</h2>
+        @if (subtitle()) {
+          <p class="subtitle">{{ subtitle() }}</p>
+        }
+      </div>
+    </div>
+    
+    @if (showClose()) {
+      <button 
+        mat-icon-button 
+        class="close-button"
+        [disabled]="loading()"
+        (click)="onClose()">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </div>
+
+  <!-- Loading Overlay -->
+  @if (loading()) {
+    <div class="loading-overlay">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  }
+
+  <!-- Content -->
+  <div class="modal-content" mat-dialog-content>
+    <ng-content></ng-content>
+  </div>
+
+  <!-- Actions -->
+  <div class="modal-actions" mat-dialog-actions>
+    @if (showSecondaryAction()) {
+      <button 
+        mat-button
+        [disabled]="loading()"
+        (click)="onSecondaryAction()">
+        {{ secondaryActionText() }}
+      </button>
+    }
+    
+    @if (showPrimaryAction()) {
+      <button 
+        mat-raised-button
+        [color]="primaryActionColor()"
+        [disabled]="loading() || primaryActionDisabled()"
+        (click)="onPrimaryAction()">
+        {{ primaryActionText() }}
+      </button>
+    }
+  </div>
+</div>

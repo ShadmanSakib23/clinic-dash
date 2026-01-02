@@ -25,7 +25,7 @@
 
     <!-- Navigation list -->
     <mat-nav-list class="nav-list">
-      @for (item of visibleNavigation(); track item.route) {
+      @for (item of accessibleNavigationItems(); track item.route) {
         <a 
           mat-list-item
           [routerLink]="item.route"
@@ -94,27 +94,15 @@
         <!-- User menu -->
         @if (currentUser(); as user) {
           <button 
-            mat-button 
+            mat-icon-button
             [matMenuTriggerFor]="userMenu"
-            class="user-button">
-            <!-- User avatar -->
-            <div class="user-avatar">
-              {{ userInitials() }}
-            </div>
-            <!-- User info (hidden on mobile) -->
-            <div class="user-info">
-              <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
-              <span class="user-role">{{ user.role }}</span>
-            </div>
-            <mat-icon>arrow_drop_down</mat-icon>
+            [matTooltip]="user.firstName + ' ' + user.lastName"
+            matTooltipPosition="below">
+            <mat-icon class="user-avatar">account_circle</mat-icon>
           </button>
-
           <!-- User dropdown menu -->
           <mat-menu #userMenu="matMenu" class="user-menu">
             <div class="user-menu-header">
-              <div class="user-avatar-large">
-                {{ userInitials() }}
-              </div>
               <div>
                 <div class="user-menu-name">{{ user.firstName }} {{ user.lastName }}</div>
                 <div class="user-menu-email">{{ user.email }}</div>

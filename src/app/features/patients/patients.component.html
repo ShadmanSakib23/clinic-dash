@@ -1,0 +1,76 @@
+<div class="patients-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1>
+          <mat-icon>people</mat-icon>
+          Patients
+        </h1>
+        <p class="subtitle">Manage patient records and information</p>
+      </div>
+
+      <div class="header-actions">
+        <!-- Bulk Actions (shown when rows are selected) -->
+        @if (hasSelection()) {
+          <button 
+            mat-raised-button 
+            color="warn"
+            (click)="deleteSelected()"
+            class="bulk-action-btn">
+            <mat-icon>delete</mat-icon>
+            Delete ({{ selectedPatients().length }})
+          </button>
+          
+          <button 
+            mat-raised-button
+            (click)="exportPatients()"
+            class="bulk-action-btn">
+            <mat-icon>download</mat-icon>
+            Export Selected
+          </button>
+        }
+
+        <!-- Primary Actions -->
+        @if (!hasSelection()) {
+          <button 
+            mat-icon-button
+            (click)="refresh()"
+            matTooltip="Refresh">
+            <mat-icon>refresh</mat-icon>
+          </button>
+
+          <button 
+            mat-raised-button
+            color="primary"
+            (click)="addPatient()">
+            <mat-icon>add</mat-icon>
+            Add Patient
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+  </div>
+
+  <!-- Data Table -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <app-data-table
+        [data]="patients()"
+        [columns]="columns()"
+        [loading]="loading()"
+        [showSearch]="true"
+        [showSelection]="true"
+        [showPagination]="true"
+        [pageSize]="10"
+        [pageSizeOptions]="[5, 10, 25, 50, 100]"
+        [emptyMessage]="'No patients found. Add your first patient to get started.'"
+        [height]="'700px'"
+        (rowClick)="onRowClick($event)"
+        (selectionChange)="onSelectionChange($event)"
+      />
+    </mat-card-content>
+  </mat-card>
+</div>

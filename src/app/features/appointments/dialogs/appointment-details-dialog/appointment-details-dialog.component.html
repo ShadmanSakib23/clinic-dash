@@ -1,0 +1,175 @@
+<app-modal
+  [title]="appointmentTitle()"
+  [subtitle]="appointmentSubtitle()"
+  [icon]="'event'"
+  [showClose]="true"
+  [showPrimaryAction]="true"
+  [showSecondaryAction]="showSecondaryAction()"
+  [primaryActionText]="primaryActionText()"
+  [secondaryActionText]="'Cancel Appointment'"
+  [primaryActionColor]="canComplete() ? 'accent' : 'primary'"
+  [loading]="loading()"
+  (primaryAction)="onPrimaryAction()"
+  (secondaryAction)="onSecondaryAction()"
+  (closed)="close()">
+
+  <!-- Status Badge -->
+  <div class="status-badge-container">
+    <mat-chip [class]="getStatusConfig(appointment().status).class">
+      {{ getStatusConfig(appointment().status).label }}
+    </mat-chip>
+  </div>
+
+  <mat-tab-group class="details-tabs">
+      <!-- Appointment Info Tab -->
+      <mat-tab label="Appointment Info">
+        <div class="tab-content">
+          <div class="info-grid">
+            <!-- Status -->
+            <div class="info-item full-width">
+              <label>Status</label>
+              <mat-chip-set>
+                <mat-chip [class]="getStatusConfig(appointment().status).class">
+                  {{ getStatusConfig(appointment().status).label }}
+                </mat-chip>
+              </mat-chip-set>
+            </div>
+
+            <!-- Date & Time -->
+            <div class="info-item">
+              <label>Date & Time</label>
+              <div class="value">
+                <mat-icon>event</mat-icon>
+                <span>{{ appointment().dateTime | date:'fullDate' }}</span>
+              </div>
+              <div class="value">
+                <mat-icon>schedule</mat-icon>
+                <span>{{ appointment().dateTime | date:'shortTime' }}</span>
+              </div>
+            </div>
+
+            <!-- Duration -->
+            <div class="info-item">
+              <label>Duration</label>
+              <div class="value">
+                <mat-icon>timer</mat-icon>
+                <span>{{ appointment().duration }} minutes</span>
+              </div>
+            </div>
+
+            <!-- Type -->
+            <div class="info-item">
+              <label>Appointment Type</label>
+              <mat-chip-set>
+                <mat-chip class="type-chip">
+                  {{ getFormattedType(appointment().type) }}
+                </mat-chip>
+              </mat-chip-set>
+            </div>
+
+            <!-- Reason -->
+            <div class="info-item full-width">
+              <label>Reason for Visit</label>
+              <p class="value">{{ appointment().reason }}</p>
+            </div>
+
+            <!-- Notes -->
+            @if (appointment().notes) {
+              <div class="info-item full-width">
+                <label>Notes</label>
+                <p class="value notes">{{ appointment().notes }}</p>
+              </div>
+            }
+
+            <!-- Symptoms -->
+            @if (appointment().symptoms && appointment().symptoms!.length > 0) {
+              <div class="info-item full-width">
+                <label>Symptoms</label>
+                <mat-chip-set>
+                  @for (symptom of appointment().symptoms; track symptom) {
+                    <mat-chip class="symptom-chip">{{ symptom }}</mat-chip>
+                  }
+                </mat-chip-set>
+              </div>
+            }
+
+            <mat-divider class="full-width"></mat-divider>
+
+            <!-- Timestamps -->
+            <div class="info-item">
+              <label>Created</label>
+              <p class="value timestamp">{{ appointment().createdAt | date:'medium' }}</p>
+            </div>
+
+            <div class="info-item">
+              <label>Last Updated</label>
+              <p class="value timestamp">{{ appointment().updatedAt | date:'medium' }}</p>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Patient Info Tab -->
+      <mat-tab label="Patient Info">
+        <div class="tab-content">
+          <div class="info-grid">
+            <div class="info-item full-width">
+              <label>Patient Name</label>
+              <div class="value name">
+                <mat-icon>person</mat-icon>
+                <span>{{ appointment().patientName }}</span>
+              </div>
+            </div>
+
+            <div class="info-item full-width">
+              <label>Patient ID</label>
+              <p class="value">{{ appointment().patientId }}</p>
+            </div>
+
+            <div class="info-section">
+              <p class="info-note">
+                <mat-icon>info</mat-icon>
+                Full patient details are available in the Patients section.
+              </p>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Doctor Info Tab -->
+      <mat-tab label="Doctor Info">
+        <div class="tab-content">
+          <div class="info-grid">
+            <div class="info-item full-width">
+              <label>Doctor Name</label>
+              <div class="value name">
+                <mat-icon>medical_services</mat-icon>
+                <span>{{ appointment().doctorName }}</span>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <label>Doctor ID</label>
+              <p class="value">{{ appointment().doctorId }}</p>
+            </div>
+
+            <div class="info-item">
+              <label>Specialization</label>
+              <mat-chip-set>
+                <mat-chip class="specialization-chip">
+                  {{ appointment().doctorSpecialization }}
+                </mat-chip>
+              </mat-chip-set>
+            </div>
+
+            <div class="info-section">
+              <p class="info-note">
+                <mat-icon>info</mat-icon>
+                Full doctor details are available in the Doctors section.
+              </p>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+</app-modal>
