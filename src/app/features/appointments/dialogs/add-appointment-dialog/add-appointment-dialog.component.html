@@ -1,0 +1,177 @@
+<app-modal
+  [title]="modalTitle()"
+  [icon]="modalIcon()"
+  [showClose]="true"
+  [showPrimaryAction]="true"
+  [showSecondaryAction]="true"
+  [primaryActionText]="primaryActionText()"
+  [secondaryActionText]="'Cancel'"
+  [primaryActionColor]="'primary'"
+  [primaryActionDisabled]="isFormInvalid()"
+  [loading]="loading()"
+  (primaryAction)="onSubmit()"
+  (secondaryAction)="onClose()"
+  (closed)="onClose()">
+
+  <form [formGroup]="appointmentForm" class="appointment-form">
+      <!-- Patient Selection -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Patient</mat-label>
+        <mat-select formControlName="patientId" required>
+          @for (patient of patients(); track patient.id) {
+            <mat-option [value]="patient.id">
+              {{ patient.firstName }} {{ patient.lastName }}
+              <span class="patient-info"> - {{ patient.email }}</span>
+            </mat-option>
+          }
+        </mat-select>
+        <mat-icon matPrefix>person</mat-icon>
+        @if (appointmentForm.get('patientId')?.hasError('required') && appointmentForm.get('patientId')?.touched) {
+          <mat-error>Patient is required</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Doctor Selection -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Doctor</mat-label>
+        <mat-select formControlName="doctorId" required>
+          @for (doctor of doctors(); track doctor.id) {
+            <mat-option [value]="doctor.id">
+              Dr. {{ doctor.firstName }} {{ doctor.lastName }}
+              <span class="doctor-specialization"> - {{ doctor.specialization }}</span>
+            </mat-option>
+          }
+        </mat-select>
+        <mat-icon matPrefix>medical_services</mat-icon>
+        @if (appointmentForm.get('doctorId')?.hasError('required') && appointmentForm.get('doctorId')?.touched) {
+          <mat-error>Doctor is required</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Date and Time Row -->
+      <div class="form-row">
+        <!-- Date -->
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="date" required>
+          <mat-icon matPrefix>event</mat-icon>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          @if (appointmentForm.get('date')?.hasError('required') && appointmentForm.get('date')?.touched) {
+            <mat-error>Date is required</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Time -->
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Time</mat-label>
+          <mat-select formControlName="time" required>
+            @for (time of getTimeOptions(); track time) {
+              <mat-option [value]="time">{{ time }}</mat-option>
+            }
+          </mat-select>
+          <mat-icon matPrefix>schedule</mat-icon>
+          @if (appointmentForm.get('time')?.hasError('required') && appointmentForm.get('time')?.touched) {
+            <mat-error>Time is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Duration and Type Row -->
+      <div class="form-row">
+        <!-- Duration -->
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Duration (minutes)</mat-label>
+          <mat-select formControlName="duration" required>
+            @for (duration of durations; track duration) {
+              <mat-option [value]="duration">{{ duration }} minutes</mat-option>
+            }
+          </mat-select>
+          <mat-icon matPrefix>timer</mat-icon>
+        </mat-form-field>
+
+        <!-- Type -->
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Appointment Type</mat-label>
+          <mat-select formControlName="type" required>
+            @for (type of appointmentTypes; track type.value) {
+              <mat-option [value]="type.value">{{ type.label }}</mat-option>
+            }
+          </mat-select>
+          <mat-icon matPrefix>category</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <!-- Reason -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Reason for Visit</mat-label>
+        <textarea
+          matInput
+          formControlName="reason"
+          rows="3"
+          placeholder="Describe the reason for this appointment..."
+          required
+        ></textarea>
+        <mat-icon matPrefix>description</mat-icon>
+        @if (appointmentForm.get('reason')?.hasError('required') && appointmentForm.get('reason')?.touched) {
+          <mat-error>Reason is required</mat-error>
+        }
+        @if (appointmentForm.get('reason')?.hasError('minlength')) {
+          <mat-error>Reason must be at least 10 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Notes -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Additional Notes (Optional)</mat-label>
+        <textarea
+          matInput
+          formControlName="notes"
+          rows="2"
+          placeholder="Any additional information..."
+        ></textarea>
+        <mat-icon matPrefix>note</mat-icon>
+      </mat-form-field>
+
+      <!-- Symptoms -->
+      <div class="symptoms-section">
+        <label class="section-label">Symptoms</label>
+        
+        <div class="symptom-input-row">
+          <mat-form-field appearance="outline" class="flex-1">
+            <mat-label>Add Symptom</mat-label>
+            <input
+              matInput
+              formControlName="symptomInput"
+              placeholder="Type a symptom and press Enter"
+              (keydown.enter)="$event.preventDefault(); addSymptom()"
+            >
+            <mat-icon matPrefix>add</mat-icon>
+          </mat-form-field>
+          <button
+            mat-raised-button
+            type="button"
+            color="primary"
+            (click)="addSymptom()"
+            [disabled]="!appointmentForm.get('symptomInput')?.value"
+          >
+            <mat-icon>add</mat-icon>
+            Add
+          </button>
+        </div>
+
+        @if (symptoms().length > 0) {
+          <mat-chip-set class="symptoms-chips">
+            @for (symptom of symptoms(); track symptom) {
+              <mat-chip (removed)="removeSymptom(symptom)">
+                {{ symptom }}
+                <button matChipRemove>
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip>
+            }
+          </mat-chip-set>
+        }
+      </div>
+    </form>
+</app-modal>

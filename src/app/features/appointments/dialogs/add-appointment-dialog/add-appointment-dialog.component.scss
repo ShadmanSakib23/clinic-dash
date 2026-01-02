@@ -1,0 +1,107 @@
+.appointment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .full-width {
+    width: 100%;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 16px;
+
+    .flex-1 {
+      flex: 1;
+    }
+  }
+
+  mat-form-field {
+    mat-icon[matPrefix] {
+      margin-right: 8px;
+      color: #666;
+    }
+  }
+
+  .patient-info,
+  .doctor-specialization {
+    font-size: 12px;
+    color: #666;
+  }
+
+  .symptoms-section {
+    .section-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+
+    .symptom-input-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+
+      button {
+        margin-top: 8px;
+        height: 40px;
+        min-width: 100px;
+
+        mat-icon {
+          margin-right: 4px;
+        }
+      }
+    }
+
+    .symptoms-chips {
+      margin-top: 12px;
+      padding: 12px;
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      min-height: 60px;
+
+      mat-chip {
+        margin: 4px;
+      }
+    }
+  }
+}
+
+// Material overrides
+::ng-deep {
+  .mat-mdc-select-panel {
+    max-height: 300px;
+  }
+
+  .mat-mdc-option {
+    .patient-info,
+    .doctor-specialization {
+      font-size: 12px;
+      color: #666;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .appointment-form {
+    .form-row {
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .symptoms-section {
+      .symptom-input-row {
+        flex-direction: column;
+
+        button {
+          width: 100%;
+          margin-top: 0;
+        }
+      }
+    }
+  }
+}

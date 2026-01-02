@@ -1,0 +1,42 @@
+<div class="appointments-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Appointments</h1>
+      <p class="subtitle">Manage patient appointments and schedules</p>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="createAppointment()">
+        <mat-icon>add</mat-icon>
+        Book Appointment
+      </button>
+    </div>
+  </div>
+
+  <mat-card class="appointments-card">
+    <mat-card-content>
+      @if (hasSelection()) {
+        <div class="selection-toolbar">
+          <span class="selection-count">{{ selectedAppointments().length }} selected</span>
+          <div class="selection-actions">
+            <button mat-button color="warn" (click)="deleteSelected()">
+              <mat-icon>delete</mat-icon>
+              Delete
+            </button>
+            <button mat-button (click)="exportAppointments()">
+              <mat-icon>download</mat-icon>
+              Export
+            </button>
+          </div>
+        </div>
+      }
+
+      <app-data-table
+        [data]="appointments()"
+        [columns]="columns()"
+        [loading]="loading()"
+        (rowClick)="onRowClick($event)"
+        (selectionChange)="onSelectionChange($event)"
+      />
+    </mat-card-content>
+  </mat-card>
+</div>
