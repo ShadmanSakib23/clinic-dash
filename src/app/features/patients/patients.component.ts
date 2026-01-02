@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { DataTableComponent, TableColumn } from '../../shared/components/data-table/data-table.component';
 import { PatientService } from '../../core/services';
 import { Patient } from '../../core/models';
@@ -36,6 +37,10 @@ import { PatientDetailsDialogComponent } from './dialogs/patient-details-dialog/
     MatChipsModule,
     MatTooltipModule,
     MatDialogModule,
+    MatNativeDateModule,
+  ],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'en-US' }
   ],
   templateUrl: './patients.component.html',
   styleUrl: './patients.component.scss',

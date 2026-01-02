@@ -20,7 +20,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -63,6 +63,9 @@ export interface PatientFormData {
     MatChipsModule,
     MatIconModule,
     MatButtonModule,
+  ],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'en-US' }
   ],
   templateUrl: './patient-form.component.html',
   styleUrl: './patient-form.component.scss',
