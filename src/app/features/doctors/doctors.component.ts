@@ -122,7 +122,7 @@ export class DoctorsComponent implements OnInit {
     {
       key: 'actions',
       label: 'Actions',
-      width: '100px',
+      width: '120px',
       align: 'center',
       sortable: false,
       searchable: false,
@@ -130,10 +130,10 @@ export class DoctorsComponent implements OnInit {
       cellTemplate: (row) => `
         <div class="action-buttons">
           <button class="action-btn view-btn" data-id="${row.id}" title="View Details">
-            <mat-icon>visibility</mat-icon>
+            <span class="material-icons">visibility</span>
           </button>
           <button class="action-btn edit-btn" data-id="${row.id}" title="Edit">
-            <mat-icon>edit</mat-icon>
+            <span class="material-icons">edit</span>
           </button>
         </div>
       `,
