@@ -56,6 +56,7 @@ export class AddAppointmentDialogComponent implements OnInit {
   readonly doctors = signal<Doctor[]>([]);
   readonly loading = signal(false);
   readonly symptoms = signal<string[]>([]);
+  readonly formValid = signal(false);
 
   readonly appointmentForm: FormGroup;
   readonly isEditMode = computed(() => !!this.data?.appointment);
@@ -70,7 +71,7 @@ export class AddAppointmentDialogComponent implements OnInit {
   readonly primaryActionText = computed(() => 
     this.isEditMode() ? 'Update Appointment' : 'Book Appointment'
   );
-  readonly isFormInvalid = computed(() => this.appointmentForm?.invalid || false);
+  readonly isFormInvalid = computed(() => !this.formValid());
 
   readonly appointmentTypes: { value: AppointmentType; label: string }[] = [
     { value: 'consultation', label: 'Consultation' },
@@ -103,6 +104,11 @@ export class AddAppointmentDialogComponent implements OnInit {
     if (this.isEditMode()) {
       this.populateForm();
     }
+
+    this.appointmentForm.statusChanges.subscribe(() => {
+      this.formValid.set(this.appointmentForm.valid);
+    });
+    this.formValid.set(this.appointmentForm.valid);
   }
 
   /**
