@@ -1,0 +1,201 @@
+<app-modal
+  [title]="isEditMode() ? 'Edit Doctor' : 'Add Doctor'"
+  [loading]="loading()"
+  (primaryAction)="onSubmit()"
+  (secondaryAction)="dialogRef.close()"
+  [primaryActionText]="isEditMode() ? 'Update' : 'Create'"
+  [primaryActionDisabled]="isFormInvalid()"
+>
+  <form [formGroup]="doctorForm" class="doctor-form">
+    <!-- Personal Information Section -->
+    <div class="form-section">
+      <h3 class="section-title">Personal Information</h3>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="firstName" required />
+          @if (doctorForm.get('firstName')?.hasError('required') && doctorForm.get('firstName')?.touched) {
+            <mat-error>First name is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lastName" required />
+          @if (doctorForm.get('lastName')?.hasError('required') && doctorForm.get('lastName')?.touched) {
+            <mat-error>Last name is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" required />
+          @if (doctorForm.get('email')?.hasError('required') && doctorForm.get('email')?.touched) {
+            <mat-error>Email is required</mat-error>
+          }
+          @if (doctorForm.get('email')?.hasError('email') && doctorForm.get('email')?.touched) {
+            <mat-error>Invalid email format</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Phone</mat-label>
+          <input matInput type="tel" formControlName="phone" required placeholder="+1-555-0100" />
+          @if (doctorForm.get('phone')?.hasError('required') && doctorForm.get('phone')?.touched) {
+            <mat-error>Phone is required</mat-error>
+          }
+          @if (doctorForm.get('phone')?.hasError('pattern') && doctorForm.get('phone')?.touched) {
+            <mat-error>Invalid phone format</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Professional Information Section -->
+    <div class="form-section">
+      <h3 class="section-title">Professional Information</h3>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>License Number</mat-label>
+          <input matInput formControlName="licenseNumber" required />
+          @if (doctorForm.get('licenseNumber')?.hasError('required') && doctorForm.get('licenseNumber')?.touched) {
+            <mat-error>License number is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Specialization</mat-label>
+          <mat-select formControlName="specialization" required>
+            @for (spec of specializations; track spec) {
+              <mat-option [value]="spec">{{ spec }}</mat-option>
+            }
+          </mat-select>
+          @if (doctorForm.get('specialization')?.hasError('required') && doctorForm.get('specialization')?.touched) {
+            <mat-error>Specialization is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Years of Experience</mat-label>
+          <input matInput type="number" formControlName="experienceYears" required min="0" />
+          @if (doctorForm.get('experienceYears')?.hasError('required') && doctorForm.get('experienceYears')?.touched) {
+            <mat-error>Experience years is required</mat-error>
+          }
+          @if (doctorForm.get('experienceYears')?.hasError('min') && doctorForm.get('experienceYears')?.touched) {
+            <mat-error>Must be 0 or greater</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Consultation Fee ($)</mat-label>
+          <input matInput type="number" formControlName="consultationFee" required min="0" />
+          @if (doctorForm.get('consultationFee')?.hasError('required') && doctorForm.get('consultationFee')?.touched) {
+            <mat-error>Consultation fee is required</mat-error>
+          }
+          @if (doctorForm.get('consultationFee')?.hasError('min') && doctorForm.get('consultationFee')?.touched) {
+            <mat-error>Must be 0 or greater</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Education Section -->
+    <div class="form-section">
+      <h3 class="section-title">Education</h3>
+      <div class="chips-container">
+        @for (edu of education(); track $index) {
+          <mat-chip class="education-chip">
+            <div class="chip-content">
+              <strong>{{ edu.degree }}</strong>
+              <span>{{ edu.institution }} ({{ edu.year }})</span>
+            </div>
+            <button mat-icon-button (click)="removeEducation($index)" class="chip-remove">
+              <span class="material-icons">close</span>
+            </button>
+          </mat-chip>
+        }
+      </div>
+      
+      <div class="add-education-form">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Degree</mat-label>
+            <input matInput formControlName="degree" placeholder="e.g., MD, MBBS" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Institution</mat-label>
+            <input matInput formControlName="institution" placeholder="University name" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Year</mat-label>
+            <input matInput type="number" formControlName="year" placeholder="Graduation year" min="1950" [max]="currentYear" />
+          </mat-form-field>
+        </div>
+        <button type="button" mat-raised-button color="accent" (click)="addEducation()" class="add-button">
+          <span class="material-icons">add</span>
+          Add Education
+        </button>
+      </div>
+    </div>
+
+    <!-- Available Time Slots Section -->
+    <div class="form-section">
+      <h3 class="section-title">Available Time Slots</h3>
+      <div class="chips-container">
+        @for (slot of availableSlots(); track $index) {
+          <mat-chip class="slot-chip">
+            <div class="chip-content">
+              <strong>{{ slot.dayOfWeek | titlecase }}</strong>
+              <span>{{ slot.startTime }} - {{ slot.endTime }}</span>
+            </div>
+            <button mat-icon-button (click)="removeTimeSlot($index)" class="chip-remove">
+              <span class="material-icons">close</span>
+            </button>
+          </mat-chip>
+        }
+      </div>
+      
+      <div class="add-slot-form">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Day of Week</mat-label>
+            <mat-select formControlName="dayOfWeek">
+              @for (day of daysOfWeek; track day.value) {
+                <mat-option [value]="day.value">{{ day.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>Start Time</mat-label>
+            <input matInput type="time" formControlName="startTime" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="third-width">
+            <mat-label>End Time</mat-label>
+            <input matInput type="time" formControlName="endTime" />
+          </mat-form-field>
+        </div>
+        <button type="button" mat-raised-button color="accent" (click)="addTimeSlot()" class="add-button">
+          <span class="material-icons">add</span>
+          Add Time Slot
+        </button>
+      </div>
+    </div>
+
+    <!-- Bio Section -->
+    <div class="form-section">
+      <h3 class="section-title">Biography</h3>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Bio</mat-label>
+        <textarea matInput formControlName="bio" rows="4" placeholder="Brief professional bio..."></textarea>
+      </mat-form-field>
+    </div>
+  </form>
+</app-modal>
