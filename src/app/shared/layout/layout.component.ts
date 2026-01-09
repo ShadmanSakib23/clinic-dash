@@ -113,7 +113,7 @@ export class LayoutComponent {
    * Opens dropdown menu with user options (profile, settings, logout)
    */
   onProfileClick() {
-    // TODO: Implement profile dropdown menu
+    this.router.navigate(['/profile']);
   }
 
 }

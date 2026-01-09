@@ -1,0 +1,254 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>My Profile</h1>
+    <p class="subtitle">Manage your account information and settings</p>
+  </div>
+
+  @if (user(); as currentUser) {
+    <div class="profile-content">
+      <!-- Profile Card -->
+      <mat-card class="profile-card">
+        <mat-card-header>
+          <div class="avatar-section">
+            @if (currentUser.avatar) {
+              <img [src]="currentUser.avatar" [alt]="currentUser.firstName + ' ' + currentUser.lastName" class="avatar-image" />
+            } @else {
+              <div class="avatar-placeholder">
+                {{ getInitials() }}
+              </div>
+            }
+          </div>
+          <div class="user-info">
+            <mat-card-title>{{ currentUser.firstName }} {{ currentUser.lastName }}</mat-card-title>
+            <mat-card-subtitle>{{ currentUser.email }}</mat-card-subtitle>
+            <div [class]="'role-chip ' + getRoleColor(currentUser.role)">
+              <span class="material-icons">badge</span>
+              {{ getRoleDisplayName(currentUser.role) }}
+            </div>
+          </div>
+        </mat-card-header>
+
+        <mat-card-content>
+          <mat-divider></mat-divider>
+
+          <!-- Account Information -->
+          <div class="info-section">
+            <h3>Account Information</h3>
+            
+            @if (!editMode()) {
+              <!-- View Mode -->
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="material-icons">person</span>
+                  <div class="info-content">
+                    <label>Full Name</label>
+                    <p>{{ currentUser.firstName }} {{ currentUser.lastName }}</p>
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <span class="material-icons">email</span>
+                  <div class="info-content">
+                    <label>Email Address</label>
+                    <p>{{ currentUser.email }}</p>
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <span class="material-icons">phone</span>
+                  <div class="info-content">
+                    <label>Phone Number</label>
+                    <p>{{ currentUser.phone || 'Not provided' }}</p>
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <span class="material-icons">calendar_today</span>
+                  <div class="info-content">
+                    <label>Member Since</label>
+                    <p>{{ currentUser.createdAt | date:'mediumDate' }}</p>
+                  </div>
+                </div>
+
+                @if (currentUser.lastLogin) {
+                  <div class="info-item">
+                    <span class="material-icons">schedule</span>
+                    <div class="info-content">
+                      <label>Last Login</label>
+                      <p>{{ currentUser.lastLogin | date:'medium' }}</p>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <div class="actions">
+                <button mat-raised-button color="primary" (click)="toggleEditMode()">
+                  <span class="material-icons">edit</span>
+                  Edit Profile
+                </button>
+                <button mat-raised-button (click)="toggleChangePasswordMode()">
+                  <span class="material-icons">lock</span>
+                  Change Password
+                </button>
+              </div>
+            } @else {
+              <!-- Edit Mode -->
+              <form [formGroup]="profileForm" class="edit-form">
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>First Name</mat-label>
+                    <input matInput formControlName="firstName" required />
+                    @if (profileForm.get('firstName')?.hasError('required') && profileForm.get('firstName')?.touched) {
+                      <mat-error>First name is required</mat-error>
+                    }
+                    @if (profileForm.get('firstName')?.hasError('minlength') && profileForm.get('firstName')?.touched) {
+                      <mat-error>Must be at least 2 characters</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Last Name</mat-label>
+                    <input matInput formControlName="lastName" required />
+                    @if (profileForm.get('lastName')?.hasError('required') && profileForm.get('lastName')?.touched) {
+                      <mat-error>Last name is required</mat-error>
+                    }
+                    @if (profileForm.get('lastName')?.hasError('minlength') && profileForm.get('lastName')?.touched) {
+                      <mat-error>Must be at least 2 characters</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Email Address</mat-label>
+                  <input matInput formControlName="email" type="email" required />
+                  <mat-hint>Email cannot be changed</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Phone Number</mat-label>
+                  <input matInput formControlName="phone" type="tel" placeholder="+1-555-0100" />
+                  @if (profileForm.get('phone')?.hasError('pattern') && profileForm.get('phone')?.touched) {
+                    <mat-error>Invalid phone format</mat-error>
+                  }
+                </mat-form-field>
+
+                <div class="actions">
+                  @if (loading()) {
+                    <button mat-raised-button color="primary" [disabled]="true">
+                      Saving...
+                    </button>
+                  } @else {
+                    <button mat-raised-button color="primary" (click)="saveProfile()">
+                      <mat-icon>save</mat-icon>
+                      Save Changes
+                    </button>
+                  }
+                  <button mat-stroked-button (click)="toggleEditMode()" [disabled]="loading()">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            }
+          </div>
+
+          <!-- Change Password Section -->
+          @if (changePasswordMode()) {
+            <mat-divider></mat-divider>
+            
+            <div class="info-section">
+              <h3>Change Password</h3>
+              
+              <form [formGroup]="passwordForm" class="password-form">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Current Password</mat-label>
+                  <input matInput type="password" formControlName="currentPassword" required />
+                  @if (passwordForm.get('currentPassword')?.hasError('required') && passwordForm.get('currentPassword')?.touched) {
+                    <mat-error>Current password is required</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>New Password</mat-label>
+                  <input matInput type="password" formControlName="newPassword" required />
+                  @if (passwordForm.get('newPassword')?.hasError('required') && passwordForm.get('newPassword')?.touched) {
+                    <mat-error>New password is required</mat-error>
+                  }
+                  @if (passwordForm.get('newPassword')?.hasError('minlength') && passwordForm.get('newPassword')?.touched) {
+                    <mat-error>Password must be at least 6 characters</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Confirm New Password</mat-label>
+                  <input matInput type="password" formControlName="confirmPassword" required />
+                  @if (passwordForm.get('confirmPassword')?.hasError('required') && passwordForm.get('confirmPassword')?.touched) {
+                    <mat-error>Please confirm your password</mat-error>
+                  }
+                  @if (passwordForm.hasError('passwordMismatch') && passwordForm.get('confirmPassword')?.touched) {
+                    <mat-error>Passwords do not match</mat-error>
+                  }
+                </mat-form-field>
+
+                <div class="actions">
+                  @if (loading()) {
+                    <button mat-raised-button color="primary" [disabled]="true">
+                      Updating...
+                    </button>
+                  } @else {
+                    <button mat-raised-button color="primary" (click)="changePassword()">
+                      <mat-icon>lock</mat-icon>
+                      Update Password
+                    </button>
+                  }
+                  <button mat-stroked-button (click)="toggleChangePasswordMode()" [disabled]="loading()">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Security & Activity Card -->
+      <mat-card class="security-card">
+        <mat-card-header>
+          <mat-card-title>
+            <span class="material-icons">security</span>
+            Security & Activity
+          </mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="security-items">
+            <div class="security-item">
+              <span class="material-icons">verified_user</span>
+              <div class="security-content">
+                <h4>Account Status</h4>
+                <p class="status-active">Active</p>
+              </div>
+            </div>
+
+            <div class="security-item">
+              <span class="material-icons">fingerprint</span>
+              <div class="security-content">
+                <h4>Account ID</h4>
+                <p class="monospace">{{ currentUser.id }}</p>
+              </div>
+            </div>
+
+            @if (currentUser.lastLogin) {
+              <div class="security-item">
+                <span class="material-icons">history</span>
+                <div class="security-content">
+                  <h4>Recent Activity</h4>
+                  <p>Last login: {{ currentUser.lastLogin | date:'short' }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</div>
