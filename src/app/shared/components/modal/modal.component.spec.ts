@@ -14,6 +14,8 @@ describe('ModalComponent', () => {
 
     fixture = TestBed.createComponent(ModalComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('title', 'Test Modal');
+    fixture.detectChanges();
     await fixture.whenStable();
   });
 

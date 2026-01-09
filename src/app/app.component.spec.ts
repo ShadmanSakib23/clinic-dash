@@ -16,8 +16,11 @@ describe('AppComponent', () => {
 
   it('should render title', async () => {
     const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, clinic-dash');
+    // The app.component.html only contains <router-outlet />, no h1 element
+    const routerOutlet = compiled.querySelector('router-outlet');
+    expect(routerOutlet).toBeTruthy();
   });
 });

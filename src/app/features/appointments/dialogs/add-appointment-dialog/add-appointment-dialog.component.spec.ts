@@ -10,10 +10,10 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 describe('AddAppointmentDialogComponent', () => {
   let component: AddAppointmentDialogComponent;
   let fixture: ComponentFixture<AddAppointmentDialogComponent>;
-  let appointmentService: jasmine.SpyObj<AppointmentService>;
-  let patientService: jasmine.SpyObj<PatientService>;
-  let doctorService: jasmine.SpyObj<DoctorService>;
-  let dialogRef: jasmine.SpyObj<MatDialogRef<AddAppointmentDialogComponent>>;
+  let appointmentService: { create: ReturnType<typeof vi.fn>; update: ReturnType<typeof vi.fn> };
+  let patientService: { getAll: ReturnType<typeof vi.fn> };
+  let doctorService: { getAll: ReturnType<typeof vi.fn> };
+  let dialogRef: { close: ReturnType<typeof vi.fn> };
 
   const mockPatients = [
     { id: 'P001', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
@@ -24,10 +24,10 @@ describe('AddAppointmentDialogComponent', () => {
   ];
 
   beforeEach(async () => {
-    const appointmentServiceSpy = jasmine.createSpyObj('AppointmentService', ['create', 'update']);
-    const patientServiceSpy = jasmine.createSpyObj('PatientService', ['getAll']);
-    const doctorServiceSpy = jasmine.createSpyObj('DoctorService', ['getAll']);
-    const dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['close']);
+    const appointmentServiceSpy = { create: vi.fn(), update: vi.fn() };
+    const patientServiceSpy = { getAll: vi.fn() };
+    const doctorServiceSpy = { getAll: vi.fn() };
+    const dialogRefSpy = { close: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [AddAppointmentDialogComponent, ReactiveFormsModule],
@@ -42,13 +42,13 @@ describe('AddAppointmentDialogComponent', () => {
       ],
     }).compileComponents();
 
-    appointmentService = TestBed.inject(AppointmentService) as jasmine.SpyObj<AppointmentService>;
-    patientService = TestBed.inject(PatientService) as jasmine.SpyObj<PatientService>;
-    doctorService = TestBed.inject(DoctorService) as jasmine.SpyObj<DoctorService>;
-    dialogRef = TestBed.inject(MatDialogRef) as jasmine.SpyObj<MatDialogRef<AddAppointmentDialogComponent>>;
+    appointmentService = TestBed.inject(AppointmentService) as any;
+    patientService = TestBed.inject(PatientService) as any;
+    doctorService = TestBed.inject(DoctorService) as any;
+    dialogRef = TestBed.inject(MatDialogRef) as any;
 
-    patientService.getAll.and.returnValue(of(mockPatients as any));
-    doctorService.getAll.and.returnValue(of(mockDoctors as any));
+    patientService.getAll.mockReturnValue(of(mockPatients as any));
+    doctorService.getAll.mockReturnValue(of(mockDoctors as any));
 
     fixture = TestBed.createComponent(AddAppointmentDialogComponent);
     component = fixture.componentInstance;
@@ -114,7 +114,7 @@ describe('AddAppointmentDialogComponent', () => {
       reason: 'Test reason',
     };
 
-    appointmentService.create.and.returnValue(of(mockAppointment as any));
+    appointmentService.create.mockReturnValue(of(mockAppointment as any));
 
     component.appointmentForm.patchValue({
       patientId: 'P001',
@@ -126,19 +126,19 @@ describe('AddAppointmentDialogComponent', () => {
       reason: 'Test reason for appointment',
     });
 
-    component.submit();
+    component.onSubmit();
 
     expect(appointmentService.create).toHaveBeenCalled();
     expect(dialogRef.close).toHaveBeenCalledWith(true);
   });
 
   it('should not submit invalid form', () => {
-    component.submit();
+    component.onSubmit();
     expect(appointmentService.create).not.toHaveBeenCalled();
   });
 
   it('should close dialog', () => {
-    component.close();
+    component.onClose();
     expect(dialogRef.close).toHaveBeenCalled();
   });
 

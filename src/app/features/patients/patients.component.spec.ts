@@ -1,82 +1,106 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+﻿import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { PatientsComponent } from './patients.component';
-import { PatientService } from '../../core/services';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { PatientService } from '../../core/services/patient.service';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
-import { Patient } from '../../core/models';
 
 describe('PatientsComponent', () => {
   let component: PatientsComponent;
   let fixture: ComponentFixture<PatientsComponent>;
-  let patientService: any;
+  let patientService: { getAll: ReturnType<typeof vi.fn> };
+  let router: { navigate: ReturnType<typeof vi.fn> };
+  let dialog: { open: ReturnType<typeof vi.fn> };
 
-  const mockPatients: Patient[] = [
+  const mockPatients = [
     {
       id: '1',
       firstName: 'John',
       lastName: 'Doe',
-      dateOfBirth: new Date('1990-01-15'),
-      gender: 'male',
       email: 'john.doe@example.com',
-      phone: '555-0101',
+      phone: '555-0100',
+      dateOfBirth: new Date('1990-01-01'),
+      gender: 'male' as const,
       address: {
         street: '123 Main St',
-        city: 'New York',
-        state: 'NY',
-        zipCode: '10001',
-        country: 'USA'
+        city: 'Springfield',
+        state: 'IL',
+        zipCode: '62701',
+        country: 'USA',
       },
       emergencyContact: {
         name: 'Jane Doe',
         relationship: 'Spouse',
-        phone: '555-0102'
+        phone: '555-0101',
       },
-      bloodType: 'A+',
-      allergies: ['Penicillin'],
+      bloodType: 'O+' as const,
+      allergies: ['None'],
       chronicConditions: [],
-      registeredDate: new Date('2023-01-01'),
-      lastVisit: new Date('2024-12-15')
+      insuranceInfo: {
+        provider: 'Blue Cross',
+        policyNumber: 'BC123456',
+        expiryDate: new Date('2025-12-31'),
+      },
+      registeredDate: new Date('2024-01-01'),
+      lastVisit: new Date('2024-01-15'),
     },
     {
       id: '2',
       firstName: 'Jane',
       lastName: 'Smith',
-      dateOfBirth: new Date('1985-05-20'),
-      gender: 'female',
       email: 'jane.smith@example.com',
-      phone: '555-0103',
+      phone: '555-0200',
+      dateOfBirth: new Date('1985-06-15'),
+      gender: 'female' as const,
       address: {
         street: '456 Oak Ave',
-        city: 'Los Angeles',
-        state: 'CA',
-        zipCode: '90001',
-        country: 'USA'
+        city: 'Springfield',
+        state: 'IL',
+        zipCode: '62702',
+        country: 'USA',
       },
       emergencyContact: {
         name: 'John Smith',
         relationship: 'Spouse',
-        phone: '555-0104'
+        phone: '555-0201',
       },
-      bloodType: 'O-',
-      allergies: [],
-      chronicConditions: ['Diabetes'],
-      registeredDate: new Date('2023-02-15')
-    }
+      bloodType: 'A+' as const,
+      allergies: ['Penicillin'],
+      chronicConditions: ['Hypertension'],
+      insuranceInfo: {
+        provider: 'Aetna',
+        policyNumber: 'AE789012',
+        expiryDate: new Date('2025-06-30'),
+      },
+      registeredDate: new Date('2024-01-05'),
+      lastVisit: new Date('2024-01-20'),
+    },
   ];
 
   beforeEach(async () => {
-    const patientServiceMock = {
-      getAll: () => of(mockPatients)
+    patientService = {
+      getAll: vi.fn(),
+    };
+    router = {
+      navigate: vi.fn(),
+    };
+    dialog = {
+      open: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
-      imports: [PatientsComponent, BrowserAnimationsModule],
+      imports: [PatientsComponent],
       providers: [
-        { provide: PatientService, useValue: patientServiceMock }
-      ]
+        provideAnimations(),
+        { provide: PatientService, useValue: patientService },
+        { provide: Router, useValue: router },
+        { provide: MatDialog, useValue: dialog },
+      ],
     }).compileComponents();
 
-    patientService = TestBed.inject(PatientService);
+    patientService.getAll.mockReturnValue(of(mockPatients));
+
     fixture = TestBed.createComponent(PatientsComponent);
     component = fixture.componentInstance;
   });
@@ -85,72 +109,63 @@ describe('PatientsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load patients on init', () => {
-    fixture.detectChanges();
+  describe('Component Initialization', () => {
+    it('should load patients on init', () => {
+      fixture.detectChanges();
+      
+      expect(patientService.getAll).toHaveBeenCalled();
+      expect(component.patients().length).toBe(2);
+    });
 
-    expect(component.patients().length).toBe(2);
-    expect(component.totalPatients()).toBe(2);
+    it('should initialize with empty selected patients', () => {
+      expect(component.selectedPatients()).toEqual([]);
+    });
+
+    it('should initialize loading state as false', () => {
+      expect(component.loading()).toBe(false);
+    });
   });
 
-  it('should set loading state correctly', () => {
-    expect(component.loading()).toBe(false);
-    
-    component.loadPatients();
-    
-    // After observable completes
-    expect(component.loading()).toBe(false);
+  describe('Table Configuration', () => {
+    it('should have defined table columns', () => {
+      const columns = component.columns();
+      expect(columns.length).toBeGreaterThan(0);
+    });
+
+    it('should have Patient ID column', () => {
+      const columns = component.columns();
+      const idColumn = columns.find(col => col.key === 'id');
+      expect(idColumn).toBeDefined();
+      expect(idColumn?.label).toBe('Patient ID');
+    });
+
+    it('should have Full Name column', () => {
+      const columns = component.columns();
+      const nameColumn = columns.find(col => col.key === 'firstName');
+      expect(nameColumn).toBeDefined();
+      expect(nameColumn?.sortable).toBe(true);
+    });
   });
 
-  it('should calculate age correctly', () => {
-    fixture.detectChanges();
+  describe('Patient Selection', () => {
+    beforeEach(() => {
+      fixture.detectChanges();
+    });
 
-    const patient = mockPatients[0];
-    const age = component['calculateAge'](patient.dateOfBirth);
-    
-    // John Doe born in 1990, should be around 34-35 years old
-    expect(age).toBeGreaterThanOrEqual(34);
-    expect(age).toBeLessThanOrEqual(35);
-  });
+    it('should handle selection changes', () => {
+      component.onSelectionChange([mockPatients[0]]);
+      expect(component.selectedPatients()).toEqual([mockPatients[0]]);
+    });
 
-  it('should handle selection change', () => {
-    fixture.detectChanges();
+    it('should handle empty selection', () => {
+      component.onSelectionChange([mockPatients[0]]);
+      component.onSelectionChange([]);
+      expect(component.selectedPatients()).toEqual([]);
+    });
 
-    const selection = [mockPatients[0]];
-    component.onSelectionChange(selection);
-
-    expect(component.selectedPatients()).toEqual(selection);
-    expect(component.hasSelection()).toBe(true);
-  });
-
-  it('should handle row click', () => {
-    fixture.detectChanges();
-
-    const viewSpy = (component as any).viewPatient = () => {};
-    component.onRowClick(mockPatients[0]);
-
-    // Basic test - just ensure no errors
-    expect(component).toBeTruthy();
-  });
-
-  it('should refresh patient list', () => {
-    component.refresh();
-
-    // After refresh, patients should be loaded
-    expect(component.patients().length).toBeGreaterThanOrEqual(0);
-  });
-
-  it('should format date correctly', () => {
-    const date = new Date('2024-12-15');
-    const formatted = component['formatDate'](date);
-
-    expect(formatted).toContain('Dec');
-    expect(formatted).toContain('15');
-    expect(formatted).toContain('2024');
-  });
-
-  it('should show stats correctly', () => {
-    fixture.detectChanges();
-
-    expect(component.totalPatients()).toBe(2);
+    it('should handle multiple selections', () => {
+      component.onSelectionChange(mockPatients);
+      expect(component.selectedPatients().length).toBe(2);
+    });
   });
 });

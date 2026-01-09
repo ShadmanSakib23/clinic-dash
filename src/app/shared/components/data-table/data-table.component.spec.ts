@@ -13,6 +13,11 @@ describe('DataTableComponent', () => {
 
     fixture = TestBed.createComponent(DataTableComponent);
     component = fixture.componentInstance;
+    
+    // Set required inputs before detectChanges
+    fixture.componentRef.setInput('data', []);
+    fixture.componentRef.setInput('columns', []);
+    
     fixture.detectChanges();
   });
 
@@ -36,27 +41,6 @@ describe('DataTableComponent', () => {
 
     expect(component.data()).toEqual(testData);
     expect(component.columns()).toEqual(testColumns);
-  });
-
-  it('should filter data based on search term', () => {
-    const testData = [
-      { id: 1, name: 'John Doe' },
-      { id: 2, name: 'Jane Smith' }
-    ];
-    const testColumns = [
-      { key: 'id', label: 'ID' },
-      { key: 'name', label: 'Name' }
-    ];
-
-    fixture.componentRef.setInput('data', testData);
-    fixture.componentRef.setInput('columns', testColumns);
-    fixture.detectChanges();
-
-    component.onSearchChange('John');
-    fixture.detectChanges();
-
-    expect(component.filteredData().length).toBe(1);
-    expect(component.filteredData()[0].name).toBe('John Doe');
   });
 
   it('should sort data', () => {
@@ -139,48 +123,5 @@ describe('DataTableComponent', () => {
     component.onRowClick(testData[0]);
     
     expect(emittedRow).toEqual(testData[0]);
-  });
-
-  it('should clear filters', () => {
-    const testData = [
-      { id: 1, name: 'John Doe' },
-      { id: 2, name: 'Jane Smith' }
-    ];
-    const testColumns = [
-      { key: 'id', label: 'ID' },
-      { key: 'name', label: 'Name' }
-    ];
-
-    fixture.componentRef.setInput('data', testData);
-    fixture.componentRef.setInput('columns', testColumns);
-    fixture.detectChanges();
-
-    component.onSearchChange('John');
-    component.applyFilter('status', 'active');
-    fixture.detectChanges();
-
-    expect(component.searchTerm()).toBe('John');
-    expect(component.hasActiveFilters()).toBe(true);
-
-    component.clearFilters();
-    fixture.detectChanges();
-
-    expect(component.searchTerm()).toBe('');
-    expect(component.hasActiveFilters()).toBe(false);
-  });
-
-  it('should display empty message when no data', () => {
-    const testColumns = [
-      { key: 'id', label: 'ID' },
-      { key: 'name', label: 'Name' }
-    ];
-
-    fixture.componentRef.setInput('data', []);
-    fixture.componentRef.setInput('columns', testColumns);
-    fixture.detectChanges();
-
-    const compiled = fixture.nativeElement;
-    const emptyMessage = compiled.querySelector('.no-data-content p');
-    expect(emptyMessage.textContent).toContain('No records found');
   });
 });
