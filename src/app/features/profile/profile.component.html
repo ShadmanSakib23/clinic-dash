@@ -86,10 +86,6 @@
                   <span class="material-icons">edit</span>
                   Edit Profile
                 </button>
-                <button mat-raised-button (click)="toggleChangePasswordMode()">
-                  <span class="material-icons">lock</span>
-                  Change Password
-                </button>
               </div>
             } @else {
               <!-- Edit Mode -->
@@ -150,63 +146,6 @@
               </form>
             }
           </div>
-
-          <!-- Change Password Section -->
-          @if (changePasswordMode()) {
-            <mat-divider></mat-divider>
-            
-            <div class="info-section">
-              <h3>Change Password</h3>
-              
-              <form [formGroup]="passwordForm" class="password-form">
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Current Password</mat-label>
-                  <input matInput type="password" formControlName="currentPassword" required />
-                  @if (passwordForm.get('currentPassword')?.hasError('required') && passwordForm.get('currentPassword')?.touched) {
-                    <mat-error>Current password is required</mat-error>
-                  }
-                </mat-form-field>
-
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>New Password</mat-label>
-                  <input matInput type="password" formControlName="newPassword" required />
-                  @if (passwordForm.get('newPassword')?.hasError('required') && passwordForm.get('newPassword')?.touched) {
-                    <mat-error>New password is required</mat-error>
-                  }
-                  @if (passwordForm.get('newPassword')?.hasError('minlength') && passwordForm.get('newPassword')?.touched) {
-                    <mat-error>Password must be at least 6 characters</mat-error>
-                  }
-                </mat-form-field>
-
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Confirm New Password</mat-label>
-                  <input matInput type="password" formControlName="confirmPassword" required />
-                  @if (passwordForm.get('confirmPassword')?.hasError('required') && passwordForm.get('confirmPassword')?.touched) {
-                    <mat-error>Please confirm your password</mat-error>
-                  }
-                  @if (passwordForm.hasError('passwordMismatch') && passwordForm.get('confirmPassword')?.touched) {
-                    <mat-error>Passwords do not match</mat-error>
-                  }
-                </mat-form-field>
-
-                <div class="actions">
-                  @if (loading()) {
-                    <button mat-raised-button color="primary" [disabled]="true">
-                      Updating...
-                    </button>
-                  } @else {
-                    <button mat-raised-button color="primary" (click)="changePassword()">
-                      <mat-icon>lock</mat-icon>
-                      Update Password
-                    </button>
-                  }
-                  <button mat-stroked-button (click)="toggleChangePasswordMode()" [disabled]="loading()">
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
-          }
         </mat-card-content>
       </mat-card>
 

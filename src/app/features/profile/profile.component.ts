@@ -19,7 +19,6 @@ import { User } from '../../core/models';
  * Features:
  * - View user details
  * - Edit profile information
- * - Change password
  * - View account metadata (created date, last login)
  */
 @Component({
@@ -47,11 +46,9 @@ export class ProfileComponent implements OnInit {
 
   readonly user = this.authService.user;
   readonly editMode = signal(false);
-  readonly changePasswordMode = signal(false);
   readonly loading = signal(false);
 
   profileForm!: FormGroup;
-  passwordForm!: FormGroup;
 
   ngOnInit(): void {
     this.initializeForms();
@@ -69,26 +66,6 @@ export class ProfileComponent implements OnInit {
       email: [{ value: currentUser?.email || '', disabled: true }, [Validators.required, Validators.email]],
       phone: [currentUser?.phone || '', [Validators.pattern(/^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,4}[-\s\.]?[0-9]{1,9}$/)]],
     });
-
-    this.passwordForm = this.fb.group({
-      currentPassword: ['', Validators.required],
-      newPassword: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required],
-    }, { validators: this.passwordMatchValidator });
-  }
-
-  /**
-   * Custom validator to check if passwords match
-   */
-  private passwordMatchValidator(form: FormGroup): { [key: string]: boolean } | null {
-    const newPassword = form.get('newPassword');
-    const confirmPassword = form.get('confirmPassword');
-
-    if (newPassword && confirmPassword && newPassword.value !== confirmPassword.value) {
-      return { passwordMismatch: true };
-    }
-
-    return null;
   }
 
   /**
@@ -104,18 +81,6 @@ export class ProfileComponent implements OnInit {
   }
 
   /**
-   * Toggle change password mode
-   */
-  toggleChangePasswordMode(): void {
-    this.changePasswordMode.set(!this.changePasswordMode());
-    
-    if (!this.changePasswordMode()) {
-      // Reset password form when canceling
-      this.passwordForm.reset();
-    }
-  }
-
-  /**
    * Save profile changes
    */
   saveProfile(): void {
@@ -127,62 +92,30 @@ export class ProfileComponent implements OnInit {
     this.loading.set(true);
 
     const formValue = this.profileForm.value;
-    const currentUser = this.user();
 
-    // Simulate API call
-    setTimeout(() => {
-      // In real app, call authService.updateProfile()
-      console.log('Profile updated:', formValue);
-      
-      this.loading.set(false);
-      this.editMode.set(false);
-      
-      this.snackBar.open('Profile updated successfully!', 'Close', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-      });
-    }, 1000);
-  }
-
-  /**
-   * Change password
-   */
-  changePassword(): void {
-    if (this.passwordForm.invalid) {
-      this.passwordForm.markAllAsTouched();
-      return;
-    }
-
-    if (this.passwordForm.hasError('passwordMismatch')) {
-      this.snackBar.open('New passwords do not match!', 'Close', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['error-snackbar'],
-      });
-      return;
-    }
-
-    this.loading.set(true);
-
-    const formValue = this.passwordForm.value;
-
-    // Simulate API call
-    setTimeout(() => {
-      // In real app, call authService.changePassword()
-      console.log('Password changed');
-      
-      this.loading.set(false);
-      this.changePasswordMode.set(false);
-      this.passwordForm.reset();
-      
-      this.snackBar.open('Password changed successfully!', 'Close', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-      });
-    }, 1000);
+    // Call authService to update profile
+    this.authService.updateProfile(formValue).subscribe({
+      next: () => {
+        this.loading.set(false);
+        this.editMode.set(false);
+        
+        this.snackBar.open('Profile updated successfully!', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+        });
+      },
+      error: (error) => {
+        this.loading.set(false);
+        
+        this.snackBar.open(error.message || 'Failed to update profile', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['error-snackbar'],
+        });
+      }
+    });
   }
 
   /**
